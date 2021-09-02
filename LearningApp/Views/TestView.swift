@@ -10,7 +10,10 @@ import SwiftUI
 struct TestView: View {
     
     @EnvironmentObject var model:ContentModel
-    @State var selectedAnswerIndex = -1
+    
+    @State var selectedAnswerIndex:Int?
+    @State var submitted = false
+    
     @State var numCorrect = 0
     
     var body: some View {
@@ -36,13 +39,40 @@ struct TestView: View {
                             } label: {
                                 
                             ZStack {
+                                if submitted == false {
                                 
                                 RectangleCard(color: index == selectedAnswerIndex ? .gray: .white)
                                     .frame(height: 48)
+                            }
+                                else {
+                                    if index == selectedAnswerIndex &&
+                                        index == model.currentQuestion!.correctIndex {
+                                        
+                                        RectangleCard(color: Color.green)
+                                            .frame(height: 48)
+                                        
+                                    }
+                                    
+                                    else if index == selectedAnswerIndex && index != model.currentQuestion!.correctIndex {
+                                        
+                                        RectangleCard(color: Color.red)
+                                            .frame(height: 48)
+                                    }
+                                    else if index == model.currentQuestion!.correctIndex {
+                                        
+                                        RectangleCard(color: Color.green)
+                                            .frame(height: 48)
+                                    }
+                                    else {
+                                        RectangleCard(color: Color.white)
+                                            .frame(height: 48)
+                                    }
+                                }
                             
                                 Text(model.currentQuestion!.answers[index])
                             }
                         }
+                            .disabled(submitted)
                     }
                 }
                     .accentColor(.black)
@@ -50,6 +80,7 @@ struct TestView: View {
                 
                 //Button
                     Button {
+                        submitted = true
                         
                         if selectedAnswerIndex == model.currentQuestion!.correctIndex {
                             numCorrect += 1
@@ -71,6 +102,7 @@ struct TestView: View {
                     
                     .padding()
             }
+                    .disabled(selectedAnswerIndex == nil)
             }
             .navigationBarTitle("\(model.currentModule?.category ?? "") Test")
         }
