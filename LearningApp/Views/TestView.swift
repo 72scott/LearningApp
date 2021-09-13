@@ -15,10 +15,12 @@ struct TestView: View {
     @State var submitted = false
     
     @State var numCorrect = 0
+    @State var showResults = false
     
     var body: some View {
         
-        if model.currentQuestion != nil {
+        if model.currentQuestion != nil &&
+            showResults == false {
             
             VStack (alignment: .leading) {
                 //Question Number
@@ -77,16 +79,24 @@ struct TestView: View {
                 }
                     .accentColor(.black)
                     .padding()
-                
+                }
                 //Button
                     Button {
                         if submitted == true {
+                            
+                            if model.currentQuestionIndex + 1 == model.currentModule!.test.questions.count {
+                            
+                            showResults = true
+                            
+                            }
+                            else {
+                            
                             model.nextQuestion()
                             
                             submitted = false
                             selectedAnswerIndex = nil
                         }
-                        
+                        }
                         else {
                             
                             submitted = true
@@ -116,13 +126,20 @@ struct TestView: View {
             }
             .navigationBarTitle("\(model.currentModule?.category ?? "") Test")
         }
+    
+        else if showResults == true {
+            
+            TestResultView(numCorrect: numCorrect)
+            
         }
+        
         else {
             ProgressView()
             
         }
-    }
+        }
     
+        
     var buttonText:String {
         
         if submitted == true {
@@ -147,3 +164,4 @@ struct TestView_Previews: PreviewProvider {
         TestView()
     }
 }
+
